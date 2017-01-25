@@ -6,13 +6,13 @@ from scrapy.http import Request, Response
 import twitter
 
 
-class TwitterUserTimelineRequest(Request):
+class TwitterHomeTimelineRequest(Request):
 
     def __init__(self, *args, **kwargs):
         self.screen_name = kwargs.pop('screen_name', None)
         self.count = kwargs.pop('count', None)
         self.max_id = kwargs.pop('max_id', None)
-        super(TwitterUserTimelineRequest, self).__init__('http://twitter.com',
+        super(TwitterHomeTimelineRequest, self).__init__('http://twitter.com',
                                                          dont_filter=True,
                                                          **kwargs)
 
@@ -62,11 +62,10 @@ class TwitterDownloaderMiddleware(object):
 
     def process_request(self, request, spider):
 
-        if isinstance(request, TwitterUserTimelineRequest):
-            tweets = self.api.GetUserTimeline(screen_name=request.screen_name,
-                                              count=request.count,
+        if isinstance(request, TwitterHomeTimelineRequest):
+            tweets = self.api.GetHomeTimeline(count=request.count,
                                               max_id=request.max_id)
-            return TwitterResponse(tweets=[tweet.AsDict() for tweet in tweets])
+            return TwitterResponse(tweets=tweets)
 
         if isinstance(request, TwitterStreamFilterRequest):
             tweets = self.api.GetStreamFilter(track=request.track)
